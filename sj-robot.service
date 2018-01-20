@@ -1,0 +1,14 @@
+[Unit]
+Description=Discord Bot Server: SJ
+Type=forking
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/node /home/jd/SJ/bot.js
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
