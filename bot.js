@@ -16,6 +16,8 @@ const Behaviors = [
         msg.channel.topic !== "music" ||
         hasURI.test(msg.content)
       ) {
+        this._perps = new Set();
+        this._perpMercies = 4;
         return;
       }
 
