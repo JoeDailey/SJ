@@ -9,6 +9,7 @@ const hasURI = new RegExp("([a-zA-Z0-9]+://)?([a-zA-Z0-9_]+:[a-zA-Z0-9_]+@)?([a-
 
 const Behaviors = [
   require("./behaviors/MusicOnly.behavior.js")(client),
+  require("./behaviors/MineCraftLedger.behavior.js")(client),
 ];
 
 client.on('ready', () => {
