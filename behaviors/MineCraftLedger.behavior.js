@@ -64,7 +64,11 @@ cmds = [
     regex: /xyz\s+([a-zA-Z\s]+)/g,
     capturegroups: 1,
     execute: function (msg, search) {
-      db.all("SELECT * FROM coords WHERE desc LIKE '%"+search+"%'", (e, rows) => {
+     console.log(search);
+      if (search == "all") {
+        return;
+      }
+      db.all("SELECT * FROM coords WHERE UPPER(desc) LIKE UPPER('%"+search+"%')", (e, rows) => {
         if (e || !rows) console.log(e, rows);
         let print = `Coord results for search: [${search}]...\n`;
         for (row of rows) {

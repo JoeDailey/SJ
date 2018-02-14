@@ -17,6 +17,7 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
+  console.log(msg);
   for (rule of Behaviors) {
     rule.handleOnMessage && rule.handleOnMessage(msg);
   }
