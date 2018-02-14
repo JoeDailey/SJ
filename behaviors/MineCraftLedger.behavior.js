@@ -14,9 +14,9 @@ function getAll(callback) {
   });
 }
 
-cmds = [
+const cmds = [
   {
-    regex: /\/help/g,
+    regex: /\/help/,
     capturegroups: 0,
     execute: function (msg) {
       msg.channel.send(
@@ -31,7 +31,7 @@ cmds = [
     },
   },
   {
-    regex: /\/xyz\s+([+-]?\d*\.?\d*)\s+([+-]?\d*\.?\d*)\s+([+-]?\d*\.?\d*)\s+([a-zA-Z\s]+)/g,
+    regex: /\/xyz\s+([+-]?\d*\.?\d*)\s+([+-]?\d*\.?\d*)\s+([+-]?\d*\.?\d*)\s+([a-zA-Z\s]+)/,
     capturegroups: 4,
     execute: function (msg, x, y, z, desc) {
       db.run("INSERT INTO coords (x, y, z, desc, owner) VALUES (?, ?, ?, ?, ?);", x, y, z, desc, msg.author.tag, function(e) {
@@ -46,7 +46,7 @@ cmds = [
     },
   },
   {
-    regex: /\/xz\s+([+-]?\d*\.?\d*)\s+([+-]?\d*\.?\d*)\s+([a-zA-Z\s]+)/g,
+    regex: /\/xz\s+([+-]?\d*\.?\d*)\s+([+-]?\d*\.?\d*)\s+([a-zA-Z\s]+)/,
     capturegroups: 3,
     execute: function (msg, x, z, desc) {
       db.run("INSERT INTO coords (x, y, z, desc, owner) VALUES (?, null, ?, ?, ?);", x, z, desc, msg.author.tag, function(e) {
@@ -61,31 +61,30 @@ cmds = [
     },
   },
   {
-    regex: /xyz\s+([a-zA-Z\s]+)/g,
+    regex: /xyz\s+([a-zA-Z\s]+)/,
     capturegroups: 1,
     execute: function (msg, search) {
-     console.log(search);
       if (search == "all") {
         return;
       }
-      db.all("SELECT * FROM coords WHERE UPPER(desc) LIKE UPPER('%"+search+"%')", (e, rows) => {
+      db.all("SELECT * FROM coords WHERE UPPER(desc) LIKE UPPER('%?%')", search, (e, rows) => {
         if (e || !rows) console.log(e, rows);
         let print = `Coord results for search: [${search}]...\n`;
         for (row of rows) {
-          print += `${row.desc} \tXYZ:(${row.x}, ${row.y}, ${row.z}) by @${row.owner}\n`;
+          print += `${row.desc} \n\tXYZ:(${row.x}, ${row.y}, ${row.z}) by @${row.owner}\n`;
         }
         msg.channel.send(print).catch(console.error);
       });
     }
   },
   {
-    regex: /xyz\s+all/g,
+    regex: /xyz\s+all/,
     capturegroups: 0,
     execute: function (msg) {
       getAll(function (rows) {
         let print = "Remarkable coords:\n";
         for (row of rows) {
-          print += `${row.desc} \tXYZ:(${row.x}, ${row.y}, ${row.z}) by @${row.owner}\n`;
+          print += `${row.desc} \n\tXYZ:(${row.x}, ${row.y}, ${row.z}) by @${row.owner}\n`;
         }
         msg.channel.send(print).catch(console.error);
       }.bind(this));
@@ -97,7 +96,7 @@ cmds = [
 module.exports = function(client) {
   return {
     db: db,
-    handleOnMessage: function(msg) {
+    handleOnMessage: function(msg) {  
       if (
         msg.author.id == client.user.id ||
         msg.channel.topic.indexOf("minecraft") < 0
@@ -105,8 +104,8 @@ module.exports = function(client) {
         return;
       }
 
-      for (cmd of cmds) {
-        matches = cmd.regex.exec(msg.content);
+      for (let cmd of cmds) {
+        let matches = cmd.regex.exec(msg.content);
         if (matches && matches.length === cmd.capturegroups + 1) {
           cmd.execute.bind(this)(msg, ...matches.splice(1));
         }

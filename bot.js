@@ -17,7 +17,6 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
-  console.log(msg);
   for (rule of Behaviors) {
     rule.handleOnMessage && rule.handleOnMessage(msg);
   }
@@ -25,4 +24,7 @@ client.on('message', msg => {
 
 const AUTH_TOKEN_PATH = path.join(__dirname, "AUTH_TOKEN");
 const AUTH_TOKEN = fs.readFileSync(AUTH_TOKEN_PATH, {encoding: "utf8"});
-client.login(AUTH_TOKEN.trim());
+client.login(AUTH_TOKEN.trim()).catch(e => {
+  console.log(e);
+  process.exit(1);
+});
